@@ -11,26 +11,64 @@ const addCustomer = async (payload: TCustomer) => {
   }
 };
 
-const getCustomers = async (payload: any) => {
+const getCustomers = async (query: Record<string, unknown>) => {
   try {
-    let searchValue: string = "";
-    if (payload?.searchTerm) {
-      searchValue = payload?.searchTerm
+    let searchKeyword: string = "";
+    const queryObject = { ...query };
+    if (query?.searchTerm) {
+      searchKeyword = query?.searchTerm as string;
     }
-    const data = await Customer.find({
-      $or:["name", "mobile", "address", "email"].map((field) => ({
-        [field]: { $regex: searchValue, $options: "i" } 
+    const searchQueay = Customer.find({
+      $or: ["name", "mobile", "address", "email"].map((field) => ({
+        [field]: { $regex: searchKeyword, $options: "i" }
       }))
-    }).sort({ createdAt: -1 });
+    });
+    const fieldsToExclude = ["searchTerm", "sort", "limit", "page", "fields"];
+    fieldsToExclude.forEach((field) => delete queryObject[field]);
+    
+    console.log("baseQuery:", query, "Remove Query: " ,queryObject)
 
-    if (data.length <= 0) {
-      throw new AppError(404, "Customer Not Found");
+    const filterQuery = searchQueay.find(queryObject)
+
+    let sort = "-createdAt";
+
+    if (query?.sort) {
+      sort = query.sort as string
     }
-    return data;
+
+    const sortQuery = filterQuery.sort(sort);
+    let page: number = 1;
+    let limit: number = 2;
+    let skip: number = 0;
+
+    if (query?.limit) {
+      limit = Number(query?.limit)
+    }
+    if (query?.page) {
+      page = Number(query.page);
+      skip = (page-1)* limit
+    }
+   const paginateQuery = sortQuery.skip(skip);
+    const limitQuery = paginateQuery.limit(limit)
+  
+    let fields = "-__v";
+
+    if (query.fields) {
+      fields = (query.fields as string).split(",").join(" ");
+    }
+
+    const fieldsQuery = await limitQuery.select(fields);
+
+    if (fieldsQuery.length <= 0) {
+      throw new AppError(404, "Customers Not Found");
+    }
+
+    return fieldsQuery;
   } catch (error) {
     throw error;
   }
 };
+
 
 const getCustomer = async (id: string) => {
   try {
