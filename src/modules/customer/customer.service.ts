@@ -11,17 +11,21 @@ const addCustomer = async (payload: TCustomer) => {
   }
 };
 
-const getCustomers = async () => {
+const getCustomers = async (payload: any) => {
   try {
-    
-    const data = await Customer.find().sort({ createdAt: -1 });
+    let searchValue: string = "";
+    if (payload?.searchTerm) {
+      searchValue = payload?.searchTerm
+    }
+    const data = await Customer.find({
+      $or:["name", "mobile", "address", "email"].map((field) => ({
+        [field]: { $regex: searchValue, $options: "i" } 
+      }))
+    }).sort({ createdAt: -1 });
 
     if (data.length <= 0) {
       throw new AppError(404, "Customer Not Found");
     }
-
-
-
     return data;
   } catch (error) {
     throw error;

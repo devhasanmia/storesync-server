@@ -12,8 +12,8 @@ const addCustomer: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 const getCustomers: RequestHandler = asyncHandler(async (req, res) => {
-  console.log(req.params.search)
-  const customers = await customerService.getCustomers();
+  
+  const customers = await customerService.getCustomers(req.query);
   res.status(200).json({
     status: true,
     message: "Customers fetched successfully",
