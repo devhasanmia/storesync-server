@@ -1,7 +1,7 @@
 import { TErrorSources } from "../types/error";
 
 export const handleDuplicateError = (err: any) => {
-  const statusCode = 403;
+  const statusCode = 409;
   const match = err.message.match(/"([^"]+)"/);
   const extractMsg = match && match[1];
   const errorSources: TErrorSources = [
