@@ -23,22 +23,28 @@ const getCustomers = async (query: Record<string, unknown>) => {
         [field]: { $regex: searchKeyword, $options: "i" }
       }))
     });
-    const fieldsToExclude = ["searchTerm", "sort", "limit", "page", "fields"];
+
+    const fieldsToExclude = ["searchTerm", "sort", "limit", "page", "fields", "payment"];
     fieldsToExclude.forEach((field) => delete queryObject[field]);
-    
-    console.log("baseQuery:", query, "Remove Query: " ,queryObject)
-
-    const filterQuery = searchQueay.find(queryObject)
-
+    let filterQuery = searchQueay.find(queryObject);
     let sort = "-createdAt";
-
     if (query?.sort) {
       sort = query.sort as string
     }
 
+    if (query.payment) {
+      if (query.payment === "due") {
+        filterQuery = filterQuery.find({ due: { $gt: 0 } });
+      }else if(query.payment === "paid"){
+        filterQuery = filterQuery.find({ due: { $eq: 0 } });
+      }else if(query.payment === "balance"){
+        filterQuery = filterQuery.find({balance: {$gt: 0}})
+      }
+    }
+
     const sortQuery = filterQuery.sort(sort);
     let page: number = 1;
-    let limit: number = 2;
+    let limit: number = 5;
     let skip: number = 0;
 
     if (query?.limit) {
@@ -50,24 +56,20 @@ const getCustomers = async (query: Record<string, unknown>) => {
     }
    const paginateQuery = sortQuery.skip(skip);
     const limitQuery = paginateQuery.limit(limit)
-  
     let fields = "-__v";
-
     if (query.fields) {
       fields = (query.fields as string).split(",").join(" ");
     }
-
     const fieldsQuery = await limitQuery.select(fields);
-
     if (fieldsQuery.length <= 0) {
       throw new AppError(404, "Customers Not Found");
     }
-
     return fieldsQuery;
   } catch (error) {
     throw error;
   }
 };
+
 
 
 const getCustomer = async (id: string) => {
