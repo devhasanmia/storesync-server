@@ -11,4 +11,6 @@ router.post(
   brandController.addBrand
 );
 
+router.get("/get-brands", brandController.getBrand)
+
 export const brandRoute = router;

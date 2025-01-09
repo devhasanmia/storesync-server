@@ -11,4 +11,13 @@ const addBrand: RequestHandler = asyncHandler(async (req, res) => {
   });
 });
 
-export const brandController = { addBrand };
+const getBrand: RequestHandler = asyncHandler(async (req, res) => {
+  const brand = await brandService.getBrands(req.query);
+  res.status(200).json({
+    status: true,
+    message: "All Brand Retrive Successfully",
+    data: brand
+  });
+});
+
+export const brandController = { addBrand, getBrand };

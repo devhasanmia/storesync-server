@@ -2,12 +2,28 @@ import { RequestHandler } from "express";
 import Unit from "../../modules/units/unit.model";
 
 export const unitSeed: RequestHandler = async (req, res) => {
+  
   const units = [
     { name: "Piece" },
     { name: "Set" },
     { name: "Dozen" },
     { name: "Pack" },
-    { name: "Box" }
+    { name: "Box" },
+    { name: "Case" },
+    { name: "Bottle" },
+    { name: "Can" },
+    { name: "Jar" },
+    { name: "Bag" },
+    { name: "Roll" },
+    { name: "Packet" },
+    { name: "Bundle" },
+    { name: "Carton" },
+    { name: "Tray" },
+    { name: "Bar" },
+    { name: "Sheet" },
+    { name: "Liter" },
+    { name: "Gram" },
+    { name: "Kilogram" }
   ];
 
   const existingUnits = await Unit.find({
@@ -21,7 +37,7 @@ export const unitSeed: RequestHandler = async (req, res) => {
     });
     return;
   }
-
+  
   const insertedUnits = await Unit.insertMany(units);
   res.status(201).json({
     status: true,

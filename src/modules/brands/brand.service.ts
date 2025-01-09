@@ -10,4 +10,23 @@ const addBrand = async (payload: TBrand) => {
   }
 };
 
-export const brandService = { addBrand };
+const getBrands = async (query: Record<string, unknown>) => {
+  try {
+    let searchKeyword: string = "";
+    if (query?.searchTerm) {
+      searchKeyword = query?.searchTerm as string;
+    }
+    const searchQueay = await Brand.find({
+      $or: ["name"].map(field => ({
+        [field]: { $regex: searchKeyword, $options: "i" }
+      }))
+    }).sort({ updatedAt: -1 });
+    return searchQueay;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const brandService = { addBrand, getBrands };
