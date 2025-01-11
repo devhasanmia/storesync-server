@@ -12,7 +12,7 @@ const addCategory = async (payload: TCategory) => {
 
 const getCategories = async () => {
   try {
-    const data = await Category.find()
+    const data = await Category.find().select('name')
     return data
   } catch (error) {
     throw error;
