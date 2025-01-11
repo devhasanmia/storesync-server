@@ -13,4 +13,6 @@ router.post(
 
 router.get("/get-categories", categoryController.getCategories)
 
+router.delete("/delete-category/:id", categoryController.deleteCategory)
+
 export const categoryRoute = router;

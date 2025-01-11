@@ -19,7 +19,16 @@ const getCategories = async () => {
   }
 };
 
+const deletaCategory = async (id: string) => {
+  try {
+    const deletaCategory = await Category.findByIdAndDelete(id);
+    return deletaCategory
+  } catch (error) {
+    throw error
+  }
+}
 export const categoryService = {
   addCategory,
-  getCategories
+  getCategories,
+  deletaCategory
 };
