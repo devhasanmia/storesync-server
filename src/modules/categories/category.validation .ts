@@ -8,6 +8,6 @@ export const categoryValidation = z.object({
         invalid_type_error: "Category must be a valid string"
       })
       .min(2, { message: "Category must be at least 2 characters long" })
-      .max(30, { message: "Category must be at most 30 characters long" })
+      .max(50, { message: "Category must be at most 50 characters long" })
   })
 });

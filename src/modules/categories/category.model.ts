@@ -7,7 +7,7 @@ const categorySchema = new Schema<TCategory>(
       type: String,
       required: true,
       minlength: 2,
-      max: 30,
+      max: 50,
       unique: true
     }
   },
