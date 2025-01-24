@@ -14,6 +14,7 @@ const addCustomer = async (payload: TCustomer) => {
 const getCustomers = async (query: Record<string, unknown>) => {
   try {
     let searchKeyword: string = "";
+
     const queryObject = { ...query };
     if (query?.searchTerm) {
       searchKeyword = query?.searchTerm as string;
@@ -65,6 +66,7 @@ const getCustomers = async (query: Record<string, unknown>) => {
       throw new AppError(404, "Customers Not Found");
     }
     return fieldsQuery;
+    
   } catch (error) {
     throw error;
   }

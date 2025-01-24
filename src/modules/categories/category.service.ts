@@ -1,3 +1,4 @@
+import AppError from "../../errors/AppError";
 import Category from "./category.model";
 import { TCategory } from "./category.type";
 
@@ -10,10 +11,18 @@ const addCategory = async (payload: TCategory) => {
   }
 };
 
-const getCategories = async () => {
+const getCategories = async (searchTerm: string) => {
+  let searchKeyword = ""
+  if (searchTerm) {
+    searchKeyword = searchTerm
+  }
   try {
-    const data = await Category.find();
-    return data
+    const searchQueay = await Category.find({
+      $or: ["name", "mobile", "address", "email"].map((field) => ({
+        [field]: { $regex: searchKeyword, $options: "i" }
+      }))
+    });
+    return searchQueay
   } catch (error) {
     throw error;
   }
@@ -21,8 +30,12 @@ const getCategories = async () => {
 
 const deletaCategory = async (id: string) => {
   try {
-    const deletaCategory = await Category.findByIdAndDelete(id);
-    return deletaCategory
+    const existingCategory = await Category.findById(id);
+    if (!existingCategory) {
+      throw new AppError(404, "Category does not exist");
+    }
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    return deletedCategory;
   } catch (error) {
     throw error
   }
